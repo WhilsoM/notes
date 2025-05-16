@@ -14,7 +14,9 @@ const createNote = () => {
 			setError('Заполните все поля')
 			return
 		}
+
 		setError('')
+
 		notesStore.createNote({ id: Date.now(), title, body })
 		router.push({
 			pathname: '/',
@@ -81,6 +83,7 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		padding: 10,
 		marginTop: 10,
+		borderRadius: 10,
 	},
 	createNoteBtnText: {
 		fontSize: 18,

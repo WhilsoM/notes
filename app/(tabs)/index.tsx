@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
 	},
 	empty: {
 		textAlign: 'center',
-		fontSize: 24,
+		fontSize: 16,
 	},
 	header: {
 		display: 'flex',
