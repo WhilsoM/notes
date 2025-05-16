@@ -1,75 +1,106 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
-
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import { notesStore, NotesTypes } from '@/stores/notes'
+import { useRouter } from 'expo-router'
+import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native'
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
-  );
-}
+	const router = useRouter()
+	const notes = notesStore
 
+	const handlePress = (note: NotesTypes) => {
+		router.push({
+			pathname: '/note',
+			params: {
+				id: note.id,
+				title: note.title,
+				body: note.body,
+			},
+		})
+	}
+
+	const createNote = () => {
+		router.push({
+			pathname: '/createNote',
+		})
+	}
+
+	return (
+		<View style={styles.container}>
+			<View style={styles.header}>
+				<Text style={styles.title}>Все заметки</Text>
+
+				<Pressable onPress={createNote}>
+					<Text style={styles.noteFormCreate}>+</Text>
+				</Pressable>
+			</View>
+
+			{notes.notes.length === 0 && (
+				<Text style={styles.empty}>Заметок нету</Text>
+			)}
+
+			<FlatList
+				data={notes.notes}
+				renderItem={({ item }) => (
+					<View style={styles.borderBottom}>
+						<Pressable
+							style={styles.noteScreenBtn}
+							onPress={() => handlePress(item)}
+						>
+							<Text style={styles.noteScreenBtnText}>{item.title}</Text>
+						</Pressable>
+					</View>
+				)}
+			/>
+		</View>
+	)
+}
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-});
+	container: {
+		paddingTop: 100,
+		paddingLeft: 20,
+		paddingRight: 20,
+	},
+	title: {
+		fontSize: 30,
+	},
+	note: {
+		backgroundColor: '#000',
+	},
+	text: {
+		color: '#fff',
+		fontSize: 18,
+		padding: 10,
+	},
+	empty: {
+		textAlign: 'center',
+		fontSize: 24,
+	},
+	header: {
+		display: 'flex',
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		alignItems: 'center',
+		gap: 15,
+		marginBottom: 10,
+	},
+	btn: {
+		fontSize: 25,
+	},
+	borderBottom: {
+		borderBottomColor: 'black',
+		borderBottomWidth: 1,
+
+		width: '100%',
+	},
+	noteScreenBtn: {
+		paddingLeft: 10,
+		borderBottomColor: 'black',
+		marginBottom: 15,
+		marginTop: 15,
+	},
+	noteScreenBtnText: {
+		fontSize: 18,
+	},
+	noteFormCreate: {
+		fontSize: 25,
+	},
+})
